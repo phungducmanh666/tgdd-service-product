@@ -94,4 +94,26 @@ public class CategoryController {
                 return ResponseEntity.ok().body(
                                 ApiSuccessResponse.Success(categoryService.nameExists(name)));
         }
+
+        // @GetMapping("/{uid}/brands")
+        // public ResponseEntity<ApiSuccessResponse<?>> findAllBrands(@PathVariable(name
+        // = "uid") UUID categoryUid,
+        // @RequestParam(name = "isBelong") Boolean isBelong,
+        // @RequestParam(name = "currentPage", defaultValue = "1") int currentPage,
+        // @RequestParam(name = "itemsPerPage", defaultValue = "10") int itemsPerPage,
+        // @RequestParam(name = "orderField", defaultValue = "uid") String orderField,
+        // @RequestParam(name = "orderDirection", defaultValue = "ASC") OrderDirection
+        // orderDirection) {
+        // if (isBelong == null)
+        // isBelong = true;
+        // return ResponseEntity.ok()
+        // .body(ApiSuccessResponse.<FindAllResult<BrandDto>>Success("",
+        // categoryService.findAllBrands(
+        // categoryUid, isBelong,
+        // currentPage,
+        // itemsPerPage,
+        // orderField,
+        // orderDirection)));
+        // }
+
 }

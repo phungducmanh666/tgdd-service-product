@@ -74,4 +74,5 @@ public class CategoryService {
     public boolean nameExists(String name) {
         return categoryRepository.nameExists(name);
     }
+
 }

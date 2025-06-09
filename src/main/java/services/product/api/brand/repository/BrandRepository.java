@@ -13,7 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.CategoryDto;
+import services.product.data.dto.BrandDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,7 +21,7 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.category.CategoryRowMapper;
+import services.product.mapper.brand.BrandRowMapper;
 
 @Repository
 public class BrandRepository {
@@ -36,8 +36,8 @@ public class BrandRepository {
         this.allowedOrderFields = Set.of("uid", "name");
     }
 
-    public CategoryDto insert(String name) {
-        CategoryDto category = CategoryDto.builder()
+    public BrandDto insert(String name) {
+        BrandDto brand = BrandDto.builder()
                 .uid(GeneratorHelper.RandomUUID())
                 .name(name)
                 .build();
@@ -48,31 +48,31 @@ public class BrandRepository {
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, category.getUid().toString());
-                ps.setString(2, category.getName());
+                ps.setString(1, brand.getUid().toString());
+                ps.setString(2, brand.getName());
                 return ps;
             }, keyHolder);
 
             if (keyHolder.getKey() != null) {
-                category.setUid(ConvertorHelper.String2UUID(keyHolder.getKey().toString()));
+                brand.setUid(ConvertorHelper.String2UUID(keyHolder.getKey().toString()));
             }
-            return category;
+            return brand;
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistsException(e.getMessage());
         }
     }
 
-    public CategoryDto findByUId(UUID uid) {
+    public BrandDto findByUId(UUID uid) {
         String sql = "SELECT * FROM " + tableName + " WHERE uid = ?";
         try {
-            CategoryDto category = jdbcTemplate.queryForObject(sql, new CategoryRowMapper(), uid.toString());
-            return category;
+            BrandDto brand = jdbcTemplate.queryForObject(sql, new BrandRowMapper(), uid.toString());
+            return brand;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("not found brand with uid: %s", uid.toString()));
         }
     }
 
-    public FindAllResult<CategoryDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
+    public FindAllResult<BrandDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
         String sanitizedOrderField = allowedOrderFields.contains(orderField) ? orderField : "uid";
         String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
                 (orderDirection != null ? orderDirection.getName() : "ASC"));
@@ -82,7 +82,7 @@ public class BrandRepository {
             offset = 0;
         String paginationClause = String.format(" LIMIT %d OFFSET %d", size, offset);
         String dataSql = String.format("SELECT * FROM %s%s%s", tableName, orderByClause, paginationClause);
-        List<CategoryDto> data = jdbcTemplate.query(dataSql, new CategoryRowMapper());
+        List<BrandDto> data = jdbcTemplate.query(dataSql, new BrandRowMapper());
 
         String countSql = String.format("SELECT COUNT(*) FROM %s", tableName);
         Long totalItems = jdbcTemplate.queryForObject(countSql, Long.class);
@@ -100,7 +100,7 @@ public class BrandRepository {
                 .totalPages(totalPages)
                 .build();
 
-        return FindAllResult.<CategoryDto>builder()
+        return FindAllResult.<BrandDto>builder()
                 .data(data)
                 .pagination(paginationInfo)
                 .build();
@@ -140,7 +140,7 @@ public class BrandRepository {
         String sql = String.format("DELETE FROM %s WHERE uid = ?", tableName);
         int rowsAffected = jdbcTemplate.update(sql, uid.toString());
         if (rowsAffected == 0) {
-            throw new NotFoundException(String.format("category not found %s", uid.toString()));
+            throw new NotFoundException(String.format("brand not found %s", uid.toString()));
         }
         return rowsAffected;
     }

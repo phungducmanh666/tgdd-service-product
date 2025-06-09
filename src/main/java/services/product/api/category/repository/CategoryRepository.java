@@ -30,21 +30,21 @@ public class CategoryRepository {
     private final String tableName;
     private final Set<String> allowedOrderFields;
 
-    public CategoryRepository(JdbcTemplate jdbcTemplate){
+    public CategoryRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.tableName = "categories";
-        this.allowedOrderFields = Set.of("uid", "name"); 
+        this.allowedOrderFields = Set.of("uid", "name");
     }
 
-    public CategoryDto insert(String name){
+    public CategoryDto insert(String name) {
         CategoryDto category = CategoryDto.builder()
-        .uid(GeneratorHelper.RandomUUID())
-        .name(name)
-        .build();
+                .uid(GeneratorHelper.RandomUUID())
+                .name(name)
+                .build();
 
         String sql = String.format("INSERT INTO %s (uid, name) VALUES (?, ?)", tableName);
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        
+
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -59,7 +59,7 @@ public class CategoryRepository {
             return category;
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistsException(e.getMessage());
-        } 
+        }
     }
 
     public CategoryDto findByUId(UUID uid) {
@@ -72,12 +72,14 @@ public class CategoryRepository {
         }
     }
 
-    public FindAllResult<CategoryDto> findAll(int page, int size, String orderField, OrderDirection orderDirection){
+    public FindAllResult<CategoryDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
         String sanitizedOrderField = allowedOrderFields.contains(orderField) ? orderField : "uid";
-        String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField, (orderDirection != null ? orderDirection.getName() : "ASC"));
+        String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
+                (orderDirection != null ? orderDirection.getName() : "ASC"));
         int currentPage = Math.max(1, page);
         int offset = (currentPage - 1) * size;
-        if (offset < 0) offset = 0;
+        if (offset < 0)
+            offset = 0;
         String paginationClause = String.format(" LIMIT %d OFFSET %d", size, offset);
         String dataSql = String.format("SELECT * FROM %s%s%s", tableName, orderByClause, paginationClause);
         List<CategoryDto> data = jdbcTemplate.query(dataSql, new CategoryRowMapper());
@@ -85,26 +87,26 @@ public class CategoryRepository {
         String countSql = String.format("SELECT COUNT(*) FROM %s", tableName);
         Long totalItems = jdbcTemplate.queryForObject(countSql, Long.class);
         if (totalItems == null) {
-            totalItems = 0L; 
+            totalItems = 0L;
         }
         int totalPages = (int) Math.ceil((double) totalItems / size);
-        if (totalPages == 0 && totalItems > 0) { 
+        if (totalPages == 0 && totalItems > 0) {
             totalPages = 1;
         }
         Pagination paginationInfo = Pagination.builder()
-        .currentPage(currentPage)
-        .itemsPerPage(size)
-        .totalItems(totalItems)
-        .totalPages(totalPages)
-        .build();
+                .currentPage(currentPage)
+                .itemsPerPage(size)
+                .totalItems(totalItems)
+                .totalPages(totalPages)
+                .build();
 
         return FindAllResult.<CategoryDto>builder()
-        .data(data)
-        .pagination(paginationInfo)
-        .build();
+                .data(data)
+                .pagination(paginationInfo)
+                .build();
     }
 
-    public int updateName(UUID uid, String name){
+    public int updateName(UUID uid, String name) {
         String sql = String.format("UPDATE %s SET name = ? WHERE uid = ?", tableName);
         try {
             int rowsAffected = jdbcTemplate.update(sql, name, uid.toString());
@@ -114,7 +116,7 @@ public class CategoryRepository {
         }
     }
 
-    public int updatePhotoUrl(UUID uid, String photoUrl){
+    public int updatePhotoUrl(UUID uid, String photoUrl) {
         String sql = String.format("UPDATE %s SET photo_url = ? WHERE uid = ?", tableName);
         try {
             int rowsAffected = jdbcTemplate.update(sql, photoUrl, uid.toString());
@@ -123,8 +125,8 @@ public class CategoryRepository {
             throw new AlreadyExistsException(e.getMessage());
         }
     }
-    
-    public int update(UUID uid, String name, String photoUrl ){
+
+    public int update(UUID uid, String name, String photoUrl) {
         String sql = String.format("UPDATE %s SET name = ?, photo_url = ? WHERE uid = ?", tableName);
         try {
             int rowsAffected = jdbcTemplate.update(sql, name, photoUrl, uid.toString());
@@ -134,7 +136,7 @@ public class CategoryRepository {
         }
     }
 
-    public int deleteByUid(UUID uid){
+    public int deleteByUid(UUID uid) {
         String sql = String.format("DELETE FROM %s WHERE uid = ?", tableName);
         int rowsAffected = jdbcTemplate.update(sql, uid.toString());
         if (rowsAffected == 0) {
@@ -143,9 +145,10 @@ public class CategoryRepository {
         return rowsAffected;
     }
 
-    public boolean nameExists(String name){
+    public boolean nameExists(String name) {
         String sql = String.format("SELECT COUNT(*) FROM %s WHERE name = ?", tableName);
         Long count = jdbcTemplate.queryForObject(sql, Long.class, name);
         return count != null && count > 0;
     }
+
 }

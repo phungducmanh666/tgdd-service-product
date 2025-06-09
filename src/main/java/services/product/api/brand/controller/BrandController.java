@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import services.product.api.brand.service.BrandService;
-import services.product.data.dto.CategoryDto;
+import services.product.data.dto.BrandDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.response.ApiSuccessResponse;
@@ -33,10 +33,10 @@ public class BrandController {
 
         @PostMapping("")
         public ResponseEntity<ApiSuccessResponse<?>> insert(
-                        @RequestBody @Valid CategoryDto categoryDto) {
+                        @RequestBody @Valid BrandDto brandDto) {
                 return ResponseEntity.status(201).body(
                                 ApiSuccessResponse.Created(
-                                                brandService.insert(categoryDto.getName())));
+                                                brandService.insert(brandDto.getName())));
         }
 
         @GetMapping("/{uid}")
@@ -54,7 +54,7 @@ public class BrandController {
                         @RequestParam(name = "orderField", defaultValue = "uid") String orderField,
                         @RequestParam(name = "orderDirection", defaultValue = "ASC") OrderDirection orderDirection) {
                 return ResponseEntity.ok()
-                                .body(ApiSuccessResponse.<FindAllResult<CategoryDto>>Success("",
+                                .body(ApiSuccessResponse.<FindAllResult<BrandDto>>Success("",
                                                 brandService.findAll(
                                                                 currentPage,
                                                                 itemsPerPage,
@@ -65,11 +65,11 @@ public class BrandController {
         @PatchMapping("/{uid}/name")
         public ResponseEntity<ApiSuccessResponse<?>> update(
                         @PathVariable(name = "uid") UUID uid,
-                        @RequestBody CategoryDto categoryDto) {
+                        @RequestBody BrandDto brandDto) {
 
                 return ResponseEntity.status(200)
                                 .body(ApiSuccessResponse.Success(
-                                                brandService.updateName(uid, categoryDto.getName())));
+                                                brandService.updateName(uid, brandDto.getName())));
         }
 
         @PatchMapping("/{uid}/photo")

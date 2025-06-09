@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import services.product.api.brand.repository.BrandRepository;
-import services.product.data.dto.CategoryDto;
+import services.product.data.dto.BrandDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.helper.uploader.UploaderHelper;
@@ -25,11 +25,11 @@ public class BrandService {
         this.folderUpLoadName = "brands";
     }
 
-    public CategoryDto insert(String name) {
+    public BrandDto insert(String name) {
         return brandRepository.insert(name);
     }
 
-    public FindAllResult<CategoryDto> findAll(
+    public FindAllResult<BrandDto> findAll(
             int currentPage,
             int itemsPerPage,
             String orderField,
@@ -37,7 +37,7 @@ public class BrandService {
         return brandRepository.findAll(currentPage, itemsPerPage, orderField, orderDirection);
     }
 
-    public CategoryDto findByUid(UUID uid) {
+    public BrandDto findByUid(UUID uid) {
         return brandRepository.findByUId(uid);
     }
 
@@ -46,7 +46,7 @@ public class BrandService {
     }
 
     public int updatePhotoUrl(UUID uid, MultipartFile photo) {
-        CategoryDto existingCategory = brandRepository.findByUId(uid);
+        BrandDto existingCategory = brandRepository.findByUId(uid);
         String newPhotoUrl = null;
         try {
             newPhotoUrl = uploaderHelper.UploadPhoto(photo, folderUpLoadName);

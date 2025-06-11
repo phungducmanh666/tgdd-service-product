@@ -1,7 +1,8 @@
-package services.product.api.brand.repository;
+package services.product.api.attributeGroup.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.BrandDto;
+import services.product.data.dto.AttributeGroupDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,75 +22,94 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.brand.BrandRowMapper;
+import services.product.mapper.attributeGroup.AttributeGroupRowMapper;
 
 @Repository
-public class BrandRepository {
+public class AttributeGroupRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final String tableName;
     private final Map<String, String> allowedOrderFields;
 
-    public BrandRepository(JdbcTemplate jdbcTemplate) {
+    public AttributeGroupRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.tableName = "brands";
+        this.tableName = "attribute_groups";
         this.allowedOrderFields = Map.of(
-            "uid", "uid",
-            "name", "name",
-            "createAt","create_at"
-        );
+                "uid", "uid",
+                "name", "name",
+                "createAt", "create_at");
     }
 
-    public BrandDto insert(String name) {
-        BrandDto brand = BrandDto.builder()
+    public AttributeGroupDto insert(UUID categoryUid, String name) {
+        AttributeGroupDto item = AttributeGroupDto.builder()
                 .uid(GeneratorHelper.RandomUUID())
                 .name(name)
+                .categoryUid(categoryUid)
                 .build();
 
-        String sql = String.format("INSERT INTO %s (uid, name) VALUES (?, ?)", tableName);
+        String sql = String.format("INSERT INTO %s (uid, name, category_uid) VALUES (?, ?, ?)", tableName);
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, brand.getUid().toString());
-                ps.setString(2, brand.getName());
+                ps.setString(1, item.getUid().toString());
+                ps.setString(2, item.getName());
+                ps.setString(3, item.getCategoryUid().toString());
                 return ps;
             }, keyHolder);
 
             if (keyHolder.getKey() != null) {
-                brand.setUid(ConvertorHelper.String2UUID(keyHolder.getKey().toString()));
+                item.setUid(ConvertorHelper.String2UUID(keyHolder.getKey().toString()));
             }
-            return brand;
+            return item;
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistsException(e.getMessage());
         }
     }
 
-    public BrandDto findByUId(UUID uid) {
+    public AttributeGroupDto findByUId(UUID uid) {
         String sql = "SELECT * FROM " + tableName + " WHERE uid = ?";
         try {
-            BrandDto brand = jdbcTemplate.queryForObject(sql, new BrandRowMapper(), uid.toString());
-            return brand;
+            AttributeGroupDto attributeGroup = jdbcTemplate.queryForObject(sql, new AttributeGroupRowMapper(),
+                    uid.toString());
+            return attributeGroup;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(String.format("not found brand with uid: %s", uid.toString()));
+            throw new NotFoundException(String.format("not found attribute group with uid: %s", uid.toString()));
         }
     }
 
-    public FindAllResult<BrandDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
-        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField) : "uid";
+    public FindAllResult<AttributeGroupDto> findAll(UUID categoryUid, int page, int size, String orderField,
+            OrderDirection orderDirection) {
+        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField)
+                : "uid";
         String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
                 (orderDirection != null ? orderDirection.getName() : "ASC"));
+
+        StringBuilder whereClauseBuilder = new StringBuilder();
+        List<String> params = new ArrayList<>();
+
+        if (categoryUid != null) {
+            whereClauseBuilder.append(" WHERE category_uid = ?");
+            params.add(categoryUid.toString());
+        }
+
+        String whereClause = whereClauseBuilder.toString();
+
         int currentPage = Math.max(1, page);
         int offset = (currentPage - 1) * size;
         if (offset < 0)
             offset = 0;
         String paginationClause = String.format(" LIMIT %d OFFSET %d", size, offset);
-        String dataSql = String.format("SELECT * FROM %s%s%s", tableName, orderByClause, paginationClause);
-        List<BrandDto> data = jdbcTemplate.query(dataSql, new BrandRowMapper());
+        String dataSql = String.format("SELECT * FROM %s%s%s%s", tableName, whereClause, orderByClause,
+                paginationClause);
 
-        String countSql = String.format("SELECT COUNT(*) FROM %s", tableName);
-        Long totalItems = jdbcTemplate.queryForObject(countSql, Long.class);
+        System.out.println(String.format("\n\n %s \n\n", dataSql));
+
+        List<AttributeGroupDto> data = jdbcTemplate.query(dataSql, new AttributeGroupRowMapper(), params.toArray());
+
+        String countSql = String.format("SELECT COUNT(*) FROM %s%s", tableName, whereClause);
+        Long totalItems = jdbcTemplate.queryForObject(countSql, Long.class, params.toArray());
         if (totalItems == null) {
             totalItems = 0L;
         }
@@ -104,7 +124,7 @@ public class BrandRepository {
                 .totalPages(totalPages)
                 .build();
 
-        return FindAllResult.<BrandDto>builder()
+        return FindAllResult.<AttributeGroupDto>builder()
                 .data(data)
                 .pagination(paginationInfo)
                 .build();
@@ -120,31 +140,11 @@ public class BrandRepository {
         }
     }
 
-    public int updatePhotoUrl(UUID uid, String photoUrl) {
-        String sql = String.format("UPDATE %s SET photo_url = ? WHERE uid = ?", tableName);
-        try {
-            int rowsAffected = jdbcTemplate.update(sql, photoUrl, uid.toString());
-            return rowsAffected;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistsException(e.getMessage());
-        }
-    }
-
-    public int update(UUID uid, String name, String photoUrl) {
-        String sql = String.format("UPDATE %s SET name = ?, photo_url = ? WHERE uid = ?", tableName);
-        try {
-            int rowsAffected = jdbcTemplate.update(sql, name, photoUrl, uid.toString());
-            return rowsAffected;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistsException(e.getMessage());
-        }
-    }
-
     public int deleteByUid(UUID uid) {
         String sql = String.format("DELETE FROM %s WHERE uid = ?", tableName);
         int rowsAffected = jdbcTemplate.update(sql, uid.toString());
         if (rowsAffected == 0) {
-            throw new NotFoundException(String.format("brand not found %s", uid.toString()));
+            throw new NotFoundException(String.format("attribute group not found %s", uid.toString()));
         }
         return rowsAffected;
     }

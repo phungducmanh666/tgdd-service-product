@@ -1,7 +1,8 @@
-package services.product.api.brand.repository;
+package services.product.api.productLines.repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -13,7 +14,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.BrandDto;
+import services.product.data.dto.ProductLineDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,75 +22,104 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.brand.BrandRowMapper;
+import services.product.mapper.productLine.ProductLineRowMapper;
 
 @Repository
-public class BrandRepository {
+public class ProductLineRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final String tableName;
     private final Map<String, String> allowedOrderFields;
 
-    public BrandRepository(JdbcTemplate jdbcTemplate) {
+    public ProductLineRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.tableName = "brands";
+        this.tableName = "product_lines";
         this.allowedOrderFields = Map.of(
-            "uid", "uid",
-            "name", "name",
-            "createAt","create_at"
-        );
+                "uid", "uid",
+                "name", "name",
+                "createAt", "create_at");
     }
 
-    public BrandDto insert(String name) {
-        BrandDto brand = BrandDto.builder()
+    public ProductLineDto insert(UUID categoryUid, UUID brandUid, String name) {
+        ProductLineDto item = ProductLineDto.builder()
                 .uid(GeneratorHelper.RandomUUID())
                 .name(name)
+                .categoryUid(categoryUid)
+                .brandUid(brandUid)
                 .build();
 
-        String sql = String.format("INSERT INTO %s (uid, name) VALUES (?, ?)", tableName);
+        String sql = String.format("INSERT INTO %s (uid, name, category_uid, brand_uid) VALUES (?, ?, ?, ?)",
+                tableName);
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
             jdbcTemplate.update(connection -> {
                 PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                ps.setString(1, brand.getUid().toString());
-                ps.setString(2, brand.getName());
+                ps.setString(1, item.getUid().toString());
+                ps.setString(2, item.getName());
+                ps.setString(3, item.getCategoryUid().toString());
+                ps.setString(4, item.getBrandUid().toString());
                 return ps;
             }, keyHolder);
 
             if (keyHolder.getKey() != null) {
-                brand.setUid(ConvertorHelper.String2UUID(keyHolder.getKey().toString()));
+                item.setUid(ConvertorHelper.String2UUID(keyHolder.getKey().toString()));
             }
-            return brand;
+            return item;
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistsException(e.getMessage());
         }
     }
 
-    public BrandDto findByUId(UUID uid) {
+    public ProductLineDto findByUId(UUID uid) {
         String sql = "SELECT * FROM " + tableName + " WHERE uid = ?";
         try {
-            BrandDto brand = jdbcTemplate.queryForObject(sql, new BrandRowMapper(), uid.toString());
-            return brand;
+            ProductLineDto productLine = jdbcTemplate.queryForObject(sql, new ProductLineRowMapper(), uid.toString());
+            return productLine;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(String.format("not found brand with uid: %s", uid.toString()));
+            throw new NotFoundException(String.format("not found product line with uid: %s", uid.toString()));
         }
     }
 
-    public FindAllResult<BrandDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
-        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField) : "uid";
+    public FindAllResult<ProductLineDto> findAll(UUID categoryUid, UUID brandUid, int page, int size, String orderField,
+            OrderDirection orderDirection) {
+        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField)
+                : "uid";
         String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
                 (orderDirection != null ? orderDirection.getName() : "ASC"));
+
+        StringBuilder whereClauseBuilder = new StringBuilder();
+        List<String> params = new ArrayList<>();
+
+        if (categoryUid != null) {
+            whereClauseBuilder.append(" WHERE category_uid = ?");
+            params.add(categoryUid.toString());
+        }
+
+        if (brandUid != null) {
+            if (whereClauseBuilder.length() == 0) { // Nếu chưa có WHERE clause
+                whereClauseBuilder.append(" WHERE brand_uid = ?");
+            } else { // Nếu đã có WHERE clause (ví dụ: category_uid)
+                whereClauseBuilder.append(" AND brand_uid = ?");
+            }
+            params.add(brandUid.toString());
+        }
+        String whereClause = whereClauseBuilder.toString();
+
         int currentPage = Math.max(1, page);
         int offset = (currentPage - 1) * size;
         if (offset < 0)
             offset = 0;
         String paginationClause = String.format(" LIMIT %d OFFSET %d", size, offset);
-        String dataSql = String.format("SELECT * FROM %s%s%s", tableName, orderByClause, paginationClause);
-        List<BrandDto> data = jdbcTemplate.query(dataSql, new BrandRowMapper());
+        String dataSql = String.format("SELECT * FROM %s%s%s%s", tableName, whereClause, orderByClause,
+                paginationClause);
 
-        String countSql = String.format("SELECT COUNT(*) FROM %s", tableName);
-        Long totalItems = jdbcTemplate.queryForObject(countSql, Long.class);
+        System.out.println(String.format("\n\n %s \n\n", dataSql));
+
+        List<ProductLineDto> data = jdbcTemplate.query(dataSql, new ProductLineRowMapper(), params.toArray());
+
+        String countSql = String.format("SELECT COUNT(*) FROM %s%s", tableName, whereClause);
+        Long totalItems = jdbcTemplate.queryForObject(countSql, Long.class, params.toArray());
         if (totalItems == null) {
             totalItems = 0L;
         }
@@ -104,7 +134,7 @@ public class BrandRepository {
                 .totalPages(totalPages)
                 .build();
 
-        return FindAllResult.<BrandDto>builder()
+        return FindAllResult.<ProductLineDto>builder()
                 .data(data)
                 .pagination(paginationInfo)
                 .build();
@@ -114,26 +144,6 @@ public class BrandRepository {
         String sql = String.format("UPDATE %s SET name = ? WHERE uid = ?", tableName);
         try {
             int rowsAffected = jdbcTemplate.update(sql, name, uid.toString());
-            return rowsAffected;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistsException(e.getMessage());
-        }
-    }
-
-    public int updatePhotoUrl(UUID uid, String photoUrl) {
-        String sql = String.format("UPDATE %s SET photo_url = ? WHERE uid = ?", tableName);
-        try {
-            int rowsAffected = jdbcTemplate.update(sql, photoUrl, uid.toString());
-            return rowsAffected;
-        } catch (DuplicateKeyException e) {
-            throw new AlreadyExistsException(e.getMessage());
-        }
-    }
-
-    public int update(UUID uid, String name, String photoUrl) {
-        String sql = String.format("UPDATE %s SET name = ?, photo_url = ? WHERE uid = ?", tableName);
-        try {
-            int rowsAffected = jdbcTemplate.update(sql, name, photoUrl, uid.toString());
             return rowsAffected;
         } catch (DuplicateKeyException e) {
             throw new AlreadyExistsException(e.getMessage());
@@ -154,4 +164,5 @@ public class BrandRepository {
         Long count = jdbcTemplate.queryForObject(sql, Long.class, name);
         return count != null && count > 0;
     }
+
 }

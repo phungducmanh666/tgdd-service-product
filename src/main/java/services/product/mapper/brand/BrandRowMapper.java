@@ -15,6 +15,7 @@ public class BrandRowMapper implements RowMapper<BrandDto> {
         item.setUid(UUID.fromString(rs.getString("uid")));
         item.setName(rs.getString("name"));
         item.setPhotoUrl(rs.getString("photo_url"));
+        item.setCreateAt(rs.getDate("create_at"));
         return item;
     }
 }

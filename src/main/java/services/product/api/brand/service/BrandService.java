@@ -74,4 +74,5 @@ public class BrandService {
     public boolean nameExists(String name) {
         return brandRepository.nameExists(name);
     }
+
 }

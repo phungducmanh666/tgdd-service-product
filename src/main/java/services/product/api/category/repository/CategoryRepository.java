@@ -3,7 +3,7 @@ package services.product.api.category.repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.dao.DuplicateKeyException;
@@ -28,12 +28,16 @@ public class CategoryRepository {
 
     private final JdbcTemplate jdbcTemplate;
     private final String tableName;
-    private final Set<String> allowedOrderFields;
+    private final Map<String, String> allowedOrderFields;
 
     public CategoryRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.tableName = "categories";
-        this.allowedOrderFields = Set.of("uid", "name");
+        this.allowedOrderFields = Map.of(
+            "uid", "uid",
+            "name", "name",
+            "createAt","create_at"
+        );
     }
 
     public CategoryDto insert(String name) {
@@ -73,7 +77,7 @@ public class CategoryRepository {
     }
 
     public FindAllResult<CategoryDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
-        String sanitizedOrderField = allowedOrderFields.contains(orderField) ? orderField : "uid";
+        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField) : "uid";
         String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
                 (orderDirection != null ? orderDirection.getName() : "ASC"));
         int currentPage = Math.max(1, page);

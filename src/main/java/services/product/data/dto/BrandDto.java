@@ -1,5 +1,6 @@
 package services.product.data.dto;
 
+import java.util.Date;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
@@ -18,5 +19,6 @@ public class BrandDto {
     @NotBlank(message = "brand name cannot blank")
     String name;
     String photoUrl;
+    Date createAt;
 
 }

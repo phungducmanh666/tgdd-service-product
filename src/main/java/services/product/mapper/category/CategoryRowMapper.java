@@ -11,10 +11,11 @@ import services.product.data.dto.CategoryDto;
 public class CategoryRowMapper implements RowMapper<CategoryDto> {
         @Override
         public CategoryDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-            CategoryDto category = new CategoryDto();
-            category.setUid(UUID.fromString(rs.getString("uid")));
-            category.setName(rs.getString("name"));
-            category.setPhotoUrl(rs.getString("photo_url"));
-            return category;
+            CategoryDto item = new CategoryDto();
+            item.setUid(UUID.fromString(rs.getString("uid")));
+            item.setName(rs.getString("name"));
+            item.setPhotoUrl(rs.getString("photo_url"));
+            item.setCreateAt(rs.getDate("create_at"));
+            return item;
         }
     }

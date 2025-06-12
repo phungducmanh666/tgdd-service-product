@@ -1,10 +1,9 @@
-package services.product.data.dto;
+package services.product.data.dto.category;
 
 import java.util.Date;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,14 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProductLineDto {
+public class CategoryDto {
 
     UUID uid;
-    @NotBlank(message = "name cannot blank")
+    @NotBlank(message = "category name cannot blank")
     String name;
-    @NotNull(message = "category uid cannot null")
-    UUID categoryUid;
-    @NotNull(message = "brand uid cannot null")
-    UUID brandUid;
+    String photoUrl;
     Date createAt;
+
 }

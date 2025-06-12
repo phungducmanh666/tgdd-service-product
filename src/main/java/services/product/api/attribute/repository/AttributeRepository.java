@@ -14,7 +14,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.AttributeDto;
+import services.product.data.dto.attribute.AttributeDto;
+import services.product.data.dto.attribute.AttributeRowMapper;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -22,7 +23,6 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.attribute.AttributeRowMapper;
 
 @Repository
 public class AttributeRepository {

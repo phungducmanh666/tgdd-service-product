@@ -1,4 +1,4 @@
-package services.product.mapper.variantOption;
+package services.product.data.dto.variantOption;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,7 +6,6 @@ import java.util.UUID;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import services.product.data.dto.VariantOptionDto;
 import services.product.helper.convertor.ConvertorHelper;
 
 public class VariantOptionRowMapper implements RowMapper<VariantOptionDto> {

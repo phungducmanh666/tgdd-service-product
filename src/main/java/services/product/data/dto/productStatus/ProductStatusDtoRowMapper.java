@@ -1,4 +1,4 @@
-package services.product.mapper.brand;
+package services.product.data.dto.productStatus;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,15 +6,13 @@ import java.util.UUID;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import services.product.data.dto.BrandDto;
-
-public class BrandRowMapper implements RowMapper<BrandDto> {
+public class ProductStatusDtoRowMapper implements RowMapper<ProductStatusDto> {
     @Override
-    public BrandDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-        BrandDto item = new BrandDto();
+    public ProductStatusDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+        ProductStatusDto item = new ProductStatusDto();
         item.setUid(UUID.fromString(rs.getString("uid")));
         item.setName(rs.getString("name"));
-        item.setPhotoUrl(rs.getString("photo_url"));
+        item.setIsDefault(rs.getBoolean("is_default"));
         item.setCreateAt(rs.getDate("create_at"));
         return item;
     }

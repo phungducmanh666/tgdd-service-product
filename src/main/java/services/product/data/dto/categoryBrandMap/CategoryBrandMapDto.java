@@ -1,4 +1,4 @@
-package services.product.data.dto;
+package services.product.data.dto.categoryBrandMap;
 
 import java.util.UUID;
 

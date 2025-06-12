@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import services.product.api.variantAttribute.service.VariantAttributeService;
-import services.product.data.dto.BrandDto;
-import services.product.data.dto.VariantAttributeDto;
+import services.product.data.dto.brand.BrandDto;
+import services.product.data.dto.variantAttribute.VariantAttributeDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.response.ApiSuccessResponse;

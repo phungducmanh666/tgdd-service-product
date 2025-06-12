@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import services.product.api.variantAttribute.repository.VariantAttributeRepository;
-import services.product.data.dto.VariantAttributeDto;
+import services.product.data.dto.variantAttribute.VariantAttributeDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 

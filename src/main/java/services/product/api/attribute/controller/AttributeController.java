@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import services.product.api.attribute.service.AttributeService;
-import services.product.data.dto.AttributeDto;
-import services.product.data.dto.BrandDto;
+import services.product.data.dto.attribute.AttributeDto;
+import services.product.data.dto.brand.BrandDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.response.ApiSuccessResponse;

@@ -16,7 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import services.product.api.brand.service.BrandService;
-import services.product.data.dto.BrandDto;
+import services.product.data.dto.brand.BrandDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.response.ApiSuccessResponse;

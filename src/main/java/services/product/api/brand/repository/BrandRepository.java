@@ -13,7 +13,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.BrandDto;
+import services.product.data.dto.brand.BrandDto;
+import services.product.data.dto.brand.BrandRowMapper;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,7 +22,6 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.brand.BrandRowMapper;
 
 @Repository
 public class BrandRepository {
@@ -34,10 +34,9 @@ public class BrandRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.tableName = "brands";
         this.allowedOrderFields = Map.of(
-            "uid", "uid",
-            "name", "name",
-            "createAt","create_at"
-        );
+                "uid", "uid",
+                "name", "name",
+                "createAt", "create_at");
     }
 
     public BrandDto insert(String name) {
@@ -77,7 +76,8 @@ public class BrandRepository {
     }
 
     public FindAllResult<BrandDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
-        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField) : "uid";
+        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField)
+                : "uid";
         String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
                 (orderDirection != null ? orderDirection.getName() : "ASC"));
         int currentPage = Math.max(1, page);

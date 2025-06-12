@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import services.product.api.variantOption.repository.VariantOptionRepository;
-import services.product.data.dto.VariantOptionDto;
+import services.product.data.dto.variantOption.VariantOptionDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 

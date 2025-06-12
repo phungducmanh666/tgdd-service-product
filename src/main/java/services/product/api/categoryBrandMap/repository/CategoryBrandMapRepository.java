@@ -12,8 +12,9 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.BrandDto;
-import services.product.data.dto.CategoryBrandMapDto;
+import services.product.data.dto.brand.BrandDto;
+import services.product.data.dto.brand.BrandRowMapper;
+import services.product.data.dto.categoryBrandMap.CategoryBrandMapDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,7 +22,6 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.brand.BrandRowMapper;
 
 @Repository
 public class CategoryBrandMapRepository {

@@ -13,7 +13,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.CategoryDto;
+import services.product.data.dto.category.CategoryDto;
+import services.product.data.dto.category.CategoryRowMapper;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,7 +22,6 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.category.CategoryRowMapper;
 
 @Repository
 public class CategoryRepository {
@@ -34,10 +34,9 @@ public class CategoryRepository {
         this.jdbcTemplate = jdbcTemplate;
         this.tableName = "categories";
         this.allowedOrderFields = Map.of(
-            "uid", "uid",
-            "name", "name",
-            "createAt","create_at"
-        );
+                "uid", "uid",
+                "name", "name",
+                "createAt", "create_at");
     }
 
     public CategoryDto insert(String name) {
@@ -77,7 +76,8 @@ public class CategoryRepository {
     }
 
     public FindAllResult<CategoryDto> findAll(int page, int size, String orderField, OrderDirection orderDirection) {
-        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField) : "uid";
+        String sanitizedOrderField = allowedOrderFields.containsKey(orderField) ? allowedOrderFields.get(orderField)
+                : "uid";
         String orderByClause = String.format(" ORDER BY `%s` %s", sanitizedOrderField,
                 (orderDirection != null ? orderDirection.getName() : "ASC"));
         int currentPage = Math.max(1, page);

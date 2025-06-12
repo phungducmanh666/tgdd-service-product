@@ -1,4 +1,4 @@
-package services.product.data.dto;
+package services.product.data.dto.variantOption;
 
 import java.util.Date;
 import java.util.UUID;
@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttributeGroupDto {
+public class VariantOptionDto {
 
     UUID uid;
-    @NotBlank(message = "attribute group name cannot blank")
+    @NotBlank(message = "option name cannot blank")
     String name;
-    @NotNull(message = "attribute group need a category uid")
-    UUID categoryUid;
+    @NotNull(message = "option need a attribute uid")
+    UUID variantAttributeUid;
     Date createAt;
 
 }

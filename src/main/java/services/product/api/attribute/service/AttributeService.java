@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import services.product.api.attribute.repository.AttributeRepository;
-import services.product.data.dto.AttributeDto;
+import services.product.data.dto.attribute.AttributeDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 

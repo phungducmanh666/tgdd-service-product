@@ -13,7 +13,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import services.product.data.dto.VariantAttributeDto;
+import services.product.data.dto.variantAttribute.VariantAttributeDto;
+import services.product.data.dto.variantAttribute.VariantAttributeRowMapper;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.model.Pagination;
@@ -21,7 +22,6 @@ import services.product.exception.custome.AlreadyExistsException;
 import services.product.exception.custome.NotFoundException;
 import services.product.helper.convertor.ConvertorHelper;
 import services.product.helper.generator.GeneratorHelper;
-import services.product.mapper.variantAttribute.VariantAttributeRowMapper;
 
 @Repository
 public class VariantAttributeRepository {

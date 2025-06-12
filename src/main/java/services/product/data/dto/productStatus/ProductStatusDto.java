@@ -1,10 +1,9 @@
-package services.product.data.dto;
+package services.product.data.dto.productStatus;
 
 import java.util.Date;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttributeDto {
+public class ProductStatusDto {
 
     UUID uid;
-    @NotBlank(message = "attribute name cannot blank")
+    @NotBlank(message = "product status name cannot blank")
     String name;
-    @NotNull(message = "attribute need a attribute group uid")
-    UUID attributeGroupUid;
+    Boolean isDefault;
     Date createAt;
+
 }

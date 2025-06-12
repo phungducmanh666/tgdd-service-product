@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import services.product.api.categoryBrandMap.repository.CategoryBrandMapRepository;
-import services.product.data.dto.BrandDto;
-import services.product.data.dto.CategoryBrandMapDto;
+import services.product.data.dto.brand.BrandDto;
+import services.product.data.dto.categoryBrandMap.CategoryBrandMapDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 

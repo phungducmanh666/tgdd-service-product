@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import services.product.api.variantOption.service.VariantOptionService;
-import services.product.data.dto.VariantOptionDto;
+import services.product.data.dto.variantOption.VariantOptionDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.response.ApiSuccessResponse;

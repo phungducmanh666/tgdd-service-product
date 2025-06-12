@@ -1,12 +1,10 @@
-package services.product.mapper.variantAttribute;
+package services.product.data.dto.variantAttribute;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
 import org.springframework.jdbc.core.RowMapper;
-
-import services.product.data.dto.VariantAttributeDto;
 
 public class VariantAttributeRowMapper implements RowMapper<VariantAttributeDto> {
     @Override

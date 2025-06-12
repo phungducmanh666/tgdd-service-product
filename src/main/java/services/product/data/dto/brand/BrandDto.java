@@ -1,10 +1,9 @@
-package services.product.data.dto;
+package services.product.data.dto.brand;
 
 import java.util.Date;
 import java.util.UUID;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,13 +13,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class VariantOptionDto {
+public class BrandDto {
 
     UUID uid;
-    @NotBlank(message = "option name cannot blank")
+    @NotBlank(message = "brand name cannot blank")
     String name;
-    @NotNull(message = "option need a attribute uid")
-    UUID variantAttributeUid;
+    String photoUrl;
     Date createAt;
 
 }

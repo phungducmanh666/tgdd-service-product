@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import services.product.api.category.repository.CategoryRepository;
-import services.product.data.dto.CategoryDto;
+import services.product.data.dto.category.CategoryDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.helper.uploader.UploaderHelper;

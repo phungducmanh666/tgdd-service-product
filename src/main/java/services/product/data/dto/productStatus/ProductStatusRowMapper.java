@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.springframework.jdbc.core.RowMapper;
 
-public class ProductStatusDtoRowMapper implements RowMapper<ProductStatusDto> {
+public class ProductStatusRowMapper implements RowMapper<ProductStatusDto> {
     @Override
     public ProductStatusDto mapRow(ResultSet rs, int rowNum) throws SQLException {
         ProductStatusDto item = new ProductStatusDto();

@@ -1,4 +1,4 @@
-package services.product.api.attributeGroup.controller;
+package services.product.api.variantOption.controller;
 
 import java.util.UUID;
 
@@ -14,28 +14,28 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import services.product.api.attributeGroup.service.AttributeGroupService;
-import services.product.data.dto.AttributeGroupDto;
+import services.product.api.variantOption.service.VariantOptionService;
+import services.product.data.dto.VariantOptionDto;
 import services.product.data.model.FindAllResult;
 import services.product.data.model.OrderDirection;
 import services.product.data.response.ApiSuccessResponse;
 
 @RestController
-@RequestMapping("/attribute-groups")
-public class AttributeGroupController {
+@RequestMapping("/variant-options")
+public class VariantOptionController {
 
-        private final AttributeGroupService attributeGroupService;
+        private final VariantOptionService variantOptionService;
 
-        public AttributeGroupController(AttributeGroupService attributeGroupService) {
-                this.attributeGroupService = attributeGroupService;
+        public VariantOptionController(VariantOptionService variantOptionService) {
+                this.variantOptionService = variantOptionService;
         }
 
         @PostMapping("")
         public ResponseEntity<ApiSuccessResponse<?>> insert(
-                        @RequestBody @Valid AttributeGroupDto dto) {
+                        @RequestBody @Valid VariantOptionDto dto) {
                 return ResponseEntity.status(201).body(
                                 ApiSuccessResponse.Created(
-                                                attributeGroupService.insert(dto.getCategoryUid(),
+                                                variantOptionService.insert(dto.getVariantAttributeUid(),
                                                                 dto.getName())));
         }
 
@@ -44,19 +44,19 @@ public class AttributeGroupController {
                         @PathVariable(name = "uid") UUID uid) {
                 return ResponseEntity.status(200).body(
                                 ApiSuccessResponse.Success(
-                                                attributeGroupService.findByUid(uid)));
+                                                variantOptionService.findByUid(uid)));
         }
 
         @GetMapping("")
         public ResponseEntity<ApiSuccessResponse<?>> findAll(
-                        @RequestParam(name = "categoryUid", required = false) UUID categoryUid,
+                        @RequestParam(name = "variantAttributeUid", required = false) UUID variantAttributeUid,
                         @RequestParam(name = "currentPage", defaultValue = "1") int currentPage,
                         @RequestParam(name = "itemsPerPage", defaultValue = "10") int itemsPerPage,
                         @RequestParam(name = "orderField", defaultValue = "uid") String orderField,
                         @RequestParam(name = "orderDirection", defaultValue = "ASC") OrderDirection orderDirection) {
                 return ResponseEntity.ok()
-                                .body(ApiSuccessResponse.<FindAllResult<AttributeGroupDto>>Success("",
-                                                attributeGroupService.findAll(categoryUid,
+                                .body(ApiSuccessResponse.<FindAllResult<VariantOptionDto>>Success("",
+                                                variantOptionService.findAll(variantAttributeUid,
                                                                 currentPage,
                                                                 itemsPerPage,
                                                                 orderField,
@@ -66,24 +66,24 @@ public class AttributeGroupController {
         @PatchMapping("/{uid}/name")
         public ResponseEntity<ApiSuccessResponse<?>> update(
                         @PathVariable(name = "uid") UUID uid,
-                        @RequestBody AttributeGroupDto dto) {
+                        @RequestBody VariantOptionDto dto) {
 
                 return ResponseEntity.status(200)
                                 .body(ApiSuccessResponse.Success(
-                                                attributeGroupService.updateName(uid, dto.getName())));
+                                                variantOptionService.updateName(uid, dto.getName())));
         }
 
         @DeleteMapping("/{uid}")
         public ResponseEntity<ApiSuccessResponse<?>> deleteByUid(
                         @PathVariable(name = "uid") UUID uid) {
                 return ResponseEntity.ok().body(
-                                ApiSuccessResponse.Success(attributeGroupService.deleteByUid(uid)));
+                                ApiSuccessResponse.Success(variantOptionService.deleteByUid(uid)));
         }
 
         @GetMapping("/exists")
         public ResponseEntity<ApiSuccessResponse<?>> nameExists(
                         @RequestParam(name = "name") String name) {
                 return ResponseEntity.ok().body(
-                                ApiSuccessResponse.Success(attributeGroupService.nameExists(name)));
+                                ApiSuccessResponse.Success(variantOptionService.nameExists(name)));
         }
 }

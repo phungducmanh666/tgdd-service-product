@@ -14,13 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AttributeGroupDto {
+public class AttributeDto {
 
     UUID uid;
-    @NotBlank(message = "attribute group name cannot blank")
+    @NotBlank(message = "attribute name cannot blank")
     String name;
-    @NotNull(message = "attribute group need a category uid")
-    UUID categoryUid;
+    @NotNull(message = "attribute need a attribute group uid")
+    UUID attributeGroupUid;
     Date createAt;
-
 }
